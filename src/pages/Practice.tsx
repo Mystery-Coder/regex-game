@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Container, Form } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Button, Container, Col } from "react-bootstrap";
 
 export default function Practice() {
 	const [regexInput, setRegexInput] = useState("");
@@ -8,7 +8,9 @@ export default function Practice() {
 	);
 	const [isValid, setIsValid] = useState(true);
 	const [matches, setMatches] = useState<string[]>([]);
+	const [editTestText, setEditTestText] = useState(false);
 
+	const editButtonRef = useRef<HTMLButtonElement>(null);
 	useEffect(() => {
 		try {
 			const regex = new RegExp(regexInput, "g");
@@ -24,12 +26,39 @@ export default function Practice() {
 	return (
 		<div className="min-vh-100" style={{ background: "#7EE8FA" }}>
 			<Container className="pt-2">
-				<h1 className="mb-3">Practice Regex</h1>
-				<p className="mb-4">
-					Type a regular expression below and test it against some
-					sample text.
-				</p>
-				<Container>{testText}</Container>
+				<Col className="">
+					<h1 className="mb-3">Practice Regex</h1>
+					<p className="mb-4">
+						Type a regular expression below and test it against some
+						sample text.
+					</p>
+					{editTestText && (
+						<Container className="m-2">
+							<textarea
+								onChange={(e) => setTestText(e.target.value)}
+							>
+								{testText}
+							</textarea>
+						</Container>
+					)}
+					{!editTestText && (
+						<Container className="border border-primary">
+							{testText}
+						</Container>
+					)}
+					<Button
+						className="m-4"
+						onClick={() => {
+							setEditTestText(!editTestText);
+							if (editButtonRef.current) {
+								editButtonRef.current.textContent = "Done";
+							}
+						}}
+						ref={editButtonRef}
+					>
+						Edit
+					</Button>
+				</Col>
 			</Container>
 		</div>
 	);
