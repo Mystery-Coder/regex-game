@@ -8,8 +8,7 @@ export default function Home() {
 			<Navbar
 				className="border border-secondary border-2"
 				style={{
-					background:
-						"linear-gradient(to left,rgb(236, 30, 30),rgb(246, 187, 25))",
+					background: "",
 				}}
 			>
 				<Container fluid>
@@ -48,10 +47,19 @@ export default function Home() {
 						"linear-gradient(to right,rgb(79, 254, 169),rgb(25, 47, 246),rgb(87, 36, 255))",
 				}} // Adjust height based on navbar
 			>
-				<Button variant="info" className="m-4 fs-4">
+				<Button
+					variant="info"
+					className="m-4 fs-4"
+					onClick={() => navigate("/guess_regex")}
+				>
 					Guess the Regex
 				</Button>
-				<Button className="m-4 fs-4">Guess the Pattern</Button>
+				<Button
+					className="m-4 fs-4"
+					onClick={() => navigate("/guess_pattern")}
+				>
+					Guess the Pattern
+				</Button>
 			</Container>
 		</>
 	);
