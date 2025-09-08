@@ -12,20 +12,42 @@ export default function Home() {
 						src="/regex.png"
 						width={25}
 						height={25}
-						style={{ marginRight: 4 }}
+						style={{ marginRight: 20 }}
 					/>
 					<Typography
 						variant="h6"
 						component="div"
 						sx={{ flexGrow: 1 }}
 					>
-						RegEx Game
+						RegEx Battle
 					</Typography>
-					<Button color="inherit" onClick={() => navigate("/about")}>
+					<Button
+						color="inherit"
+						onClick={() => navigate("/about")}
+						sx={{ textTransform: "none" }}
+					>
 						About
 					</Button>
 				</Toolbar>
 			</AppBar>
+			<Box className="center-content">
+				<Button
+					color="success"
+					variant="outlined"
+					onClick={() => navigate("/about")}
+					sx={{ textTransform: "none" }}
+				>
+					Regex Challenge
+				</Button>
+				<Button
+					color="secondary"
+					variant="contained"
+					onClick={() => navigate("/about")}
+					sx={{ textTransform: "none" }}
+				>
+					String Challenge
+				</Button>
+			</Box>
 		</Box>
 	);
 }

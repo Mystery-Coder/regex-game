@@ -1,0 +1,8 @@
+.center-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center; /* horizontally center */
+	justify-content: center; /* vertically center */
+	min-height: 100vh; /* take full height of viewport */
+	gap: 0.5rem;
+}
