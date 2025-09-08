@@ -24,12 +24,6 @@ export default function Home() {
 					<Button color="inherit" onClick={() => navigate("/about")}>
 						About
 					</Button>
-					<Button
-						color="inherit"
-						onClick={() => navigate("/practice")}
-					>
-						Practice
-					</Button>
 				</Toolbar>
 			</AppBar>
 		</Box>
