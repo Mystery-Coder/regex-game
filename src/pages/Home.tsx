@@ -34,16 +34,16 @@ export default function Home() {
 				<Button
 					color="success"
 					variant="outlined"
-					onClick={() => navigate("/about")}
-					sx={{ textTransform: "none" }}
+					onClick={() => navigate("/guess_regex")}
+					sx={{ textTransform: "none", scale: 1.4 }}
 				>
 					Regex Challenge
 				</Button>
 				<Button
 					color="secondary"
 					variant="contained"
-					onClick={() => navigate("/about")}
-					sx={{ textTransform: "none" }}
+					onClick={() => navigate("/guess_pattern")}
+					sx={{ textTransform: "none", scale: 1.4 }}
 				>
 					String Challenge
 				</Button>
