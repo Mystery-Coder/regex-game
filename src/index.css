@@ -4,5 +4,17 @@
 	align-items: center; /* horizontally center */
 	justify-content: center; /* vertically center */
 	min-height: 100vh; /* take full height of viewport */
-	gap: 0.5rem;
+	gap: 1.1rem;
+}
+.center-content-horizontal {
+	display: flex;
+	flex-direction: column;
+	align-items: center; /* horizontally center */
+
+	min-height: 100vh; /* take full height of viewport */
+	gap: 1.1rem;
+}
+
+body {
+	background-color: rgb(224, 219, 219);
 }
