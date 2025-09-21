@@ -1,8 +1,13 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import type { AddPlayerRes, CreateRoomRes, Player } from "../types";
 
 export default function GuessRegex() {
 	const [joinRoom, setJoinRoom] = useState(false);
+	const [roomID, setRoomID] = useState("");
+
+	const navigator = useNavigate();
 
 	const createRoomAndJoin = async () => {
 		try {
@@ -11,8 +16,8 @@ export default function GuessRegex() {
 				throw new Error("Failed to create room");
 			}
 
-			const data = await res.json();
-			console.log(data.RoomID);
+			const createRoomData: CreateRoomRes = await res.json();
+			console.log(createRoomData.RoomID);
 
 			const add_player_res = await fetch(
 				"http://localhost:8080/add_player",
@@ -21,7 +26,7 @@ export default function GuessRegex() {
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({ RoomID: data.RoomID }),
+					body: JSON.stringify({ RoomID: createRoomData.RoomID }),
 				}
 			);
 
@@ -29,11 +34,47 @@ export default function GuessRegex() {
 				const errorData = await add_player_res.json();
 				throw new Error(errorData.error || "Failed to add player");
 			}
-			const player_data = await add_player_res.json();
-			console.log(player_data);
+			const addPlayerData: AddPlayerRes = await add_player_res.json();
+
+			const PlayerData: Player = {
+				PlayerID: addPlayerData.PlayerID,
+				RoomID: createRoomData.RoomID,
+			};
+			navigator("/regex_game", {
+				state: PlayerData,
+			});
 		} catch (e) {
 			console.log(e);
 		}
+	};
+
+	const handleJoinRoom = async () => {
+		if (joinRoom === false) {
+			setJoinRoom(true);
+			return;
+		}
+
+		const add_player_res = await fetch("http://localhost:8080/add_player", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ RoomID: roomID }),
+		});
+
+		if (!add_player_res.ok) {
+			const errorData = await add_player_res.json();
+			throw new Error(errorData.error || "Failed to add player");
+		}
+		const addPlayerData: AddPlayerRes = await add_player_res.json();
+
+		const PlayerData: Player = {
+			PlayerID: addPlayerData.PlayerID,
+			RoomID: roomID,
+		};
+		navigator("/regex_game", {
+			state: PlayerData,
+		});
 	};
 
 	return (
@@ -50,13 +91,18 @@ export default function GuessRegex() {
 					margin: "170px",
 				}}
 			>
-				{joinRoom && <TextField label="Room ID"></TextField>}
+				{joinRoom && (
+					<TextField
+						label="Room ID"
+						onChange={(e) => setRoomID(e.target.value)}
+					></TextField>
+				)}
 				{!joinRoom && (
 					<Button onClick={() => createRoomAndJoin()}>
 						Create 1v1 Room
 					</Button>
 				)}
-				<Button onClick={() => setJoinRoom(true)}>Join 1v1 Room</Button>
+				<Button onClick={() => handleJoinRoom()}>Join 1v1 Room</Button>
 			</Box>
 		</Box>
 	);
