@@ -1,11 +1,12 @@
 import { useLocation } from "react-router-dom";
-import type { Player } from "../types";
-import { useEffect, useRef } from "react";
+import type { Player, Message } from "../types";
+import { useEffect, useRef, useState } from "react";
 
 export default function RegexGame() {
 	const location = useLocation();
 	const PlayerData: Player = location.state;
 	const wsRef = useRef<WebSocket | null>(null);
+	const [noOfPlayers, setNoOfPlayers] = useState(1);
 
 	useEffect(() => {
 		if (!PlayerData?.PlayerID || !PlayerData?.RoomID) return;
@@ -15,11 +16,21 @@ export default function RegexGame() {
 		);
 
 		ws.onopen = () => {
-			console.log("✅ Connected to WebSocket");
+			console.log("Connected to WebSocket");
 		};
 
 		ws.onmessage = (event) => {
-			console.log(event.data);
+			const msg: Message = JSON.parse(event.data);
+			console.log(msg);
+			switch (msg.Type) {
+				case "STATUS": {
+					console.log(msg.Data.Status);
+
+					if (msg.Data.Status === "PLAYER2CONNECTED") {
+						setNoOfPlayers((prev) => prev + 1);
+					}
+				}
+			}
 		};
 
 		ws.onerror = (err) => {
@@ -38,5 +49,10 @@ export default function RegexGame() {
 		};
 	}, [PlayerData]);
 
-	return <div>RegexGame</div>;
+	return (
+		<div>
+			RegexGame - {noOfPlayers} in the room {PlayerData.RoomID} (share
+			this room ID)
+		</div>
+	);
 }
