@@ -12,7 +12,7 @@ export interface Player {
 }
 
 export interface RoomStatus {
-	Status: string;
+	Status: "WAITING" | "PLAYER2CONNECTED";
 }
 
 export interface Message {

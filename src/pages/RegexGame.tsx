@@ -1,12 +1,16 @@
 import { useLocation } from "react-router-dom";
 import type { Player, Message } from "../types";
 import { useEffect, useRef, useState } from "react";
-
+import { IconButton, Snackbar, Typography } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 export default function RegexGame() {
 	const location = useLocation();
 	const PlayerData: Player = location.state;
 	const wsRef = useRef<WebSocket | null>(null);
-	const [noOfPlayers, setNoOfPlayers] = useState(1);
+	const [status, setStatus] = useState<"WAITING" | "PLAYER2CONNECTED">(
+		"WAITING"
+	);
+	const [copiedSnackbar, setCopiedSnackbar] = useState(false);
 
 	useEffect(() => {
 		if (!PlayerData?.PlayerID || !PlayerData?.RoomID) return;
@@ -24,11 +28,7 @@ export default function RegexGame() {
 			console.log(msg);
 			switch (msg.Type) {
 				case "STATUS": {
-					console.log(msg.Data.Status);
-
-					if (msg.Data.Status === "PLAYER2CONNECTED") {
-						setNoOfPlayers((prev) => prev + 1);
-					}
+					setStatus(msg.Data.Status);
 				}
 			}
 		};
@@ -50,9 +50,31 @@ export default function RegexGame() {
 	}, [PlayerData]);
 
 	return (
-		<div>
-			RegexGame - {noOfPlayers} in the room {PlayerData.RoomID} (share
-			this room ID)
+		<div className="center-content-horizontal">
+			<Typography variant="h1">RegexGame</Typography>
+			<Typography>
+				{PlayerData.RoomID}{" "}
+				<IconButton
+					onClick={() => {
+						navigator.clipboard.writeText(PlayerData.RoomID);
+						setCopiedSnackbar(true);
+					}}
+				>
+					<ContentCopyIcon></ContentCopyIcon>
+				</IconButton>{" "}
+				(share this room ID)
+			</Typography>
+
+			<Typography>Current Status: {status}</Typography>
+
+			<Snackbar
+				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+				open={copiedSnackbar}
+				autoHideDuration={1000}
+				onClose={() => setCopiedSnackbar(false)}
+				message="Copied"
+				key={"bottom center"}
+			/>
 		</div>
 	);
 }
