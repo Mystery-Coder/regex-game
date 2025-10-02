@@ -19,3 +19,7 @@ export interface Message {
 	Type: string;
 	Data: RoomStatus;
 }
+
+export interface StringQuestion {
+	Question: string[];
+}

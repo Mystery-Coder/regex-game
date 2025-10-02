@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import type { Player, Message } from "../types";
+import type { Player, Message, StringQuestion } from "../types";
 import { useEffect, useRef, useState } from "react";
 import { IconButton, Snackbar, Typography } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -10,6 +10,7 @@ export default function RegexGame() {
 	const [status, setStatus] = useState<"WAITING" | "PLAYER2CONNECTED">(
 		"WAITING"
 	);
+	const [stringQuestion, setStringQuestion] = useState<StringQuestion>();
 	const [copiedSnackbar, setCopiedSnackbar] = useState(false);
 
 	useEffect(() => {
@@ -49,24 +50,47 @@ export default function RegexGame() {
 		};
 	}, [PlayerData]);
 
+	useEffect(() => {
+		const getRegexQuestion = async () => {
+			const res = await fetch(
+				"http://localhost:8080/question?type=strings"
+			);
+			const data: StringQuestion = await res.json();
+
+			setStringQuestion(data);
+		};
+
+		getRegexQuestion();
+	}, []);
+
 	return (
 		<div className="center-content-horizontal">
 			<Typography variant="h1">RegexGame</Typography>
-			<Typography>
-				{PlayerData.RoomID}{" "}
-				<IconButton
-					onClick={() => {
-						navigator.clipboard.writeText(PlayerData.RoomID);
-						setCopiedSnackbar(true);
-					}}
-				>
-					<ContentCopyIcon></ContentCopyIcon>
-				</IconButton>{" "}
-				(share this room ID)
-			</Typography>
+			{status == "WAITING" && (
+				<Typography>
+					{PlayerData.RoomID}{" "}
+					<IconButton
+						onClick={() => {
+							navigator.clipboard.writeText(PlayerData.RoomID);
+							setCopiedSnackbar(true);
+						}}
+					>
+						<ContentCopyIcon></ContentCopyIcon>
+					</IconButton>{" "}
+					(share this room ID)
+				</Typography>
+			)}
 
-			<Typography>Current Status: {status}</Typography>
-
+			{status == "PLAYER2CONNECTED" && stringQuestion && (
+				<>
+					<Typography variant="h5">Write RegEx to match,</Typography>
+					<Typography variant="h4">
+						{stringQuestion.Question[0]}{" "}
+						{stringQuestion.Question[1]}{" "}
+						{stringQuestion.Question[2]}
+					</Typography>
+				</>
+			)}
 			<Snackbar
 				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
 				open={copiedSnackbar}
