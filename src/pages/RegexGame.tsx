@@ -1,7 +1,13 @@
 import { useLocation } from "react-router-dom";
 import type { Player, Message, StringQuestion } from "../types";
 import { useEffect, useRef, useState } from "react";
-import { IconButton, Snackbar, Typography } from "@mui/material";
+import {
+	Box,
+	IconButton,
+	Snackbar,
+	TextField,
+	Typography,
+} from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 export default function RegexGame() {
 	const location = useLocation();
@@ -83,12 +89,37 @@ export default function RegexGame() {
 
 			{status == "PLAYER2CONNECTED" && stringQuestion && (
 				<>
-					<Typography variant="h5">Write RegEx to match,</Typography>
+					<Typography variant="h5">
+						Write a RegEx to match all 3 strings,
+					</Typography>
 					<Typography variant="h4">
 						{stringQuestion.Question[0]}{" "}
 						{stringQuestion.Question[1]}{" "}
 						{stringQuestion.Question[2]}
 					</Typography>
+					<Box sx={{ display: "flex", flexDirection: "row" }}>
+						<Box
+							sx={{
+								display: "flex",
+								flexDirection: "column",
+								padding: "100px",
+							}}
+						>
+							<Typography variant="h5">Your Guesses</Typography>
+							<TextField label="Guess"></TextField>
+						</Box>
+						<Box
+							sx={{
+								display: "flex",
+								flexDirection: "column",
+								padding: "100px",
+							}}
+						>
+							<Typography variant="h5">
+								Opponents Guesses
+							</Typography>
+						</Box>
+					</Box>
 				</>
 			)}
 			<Snackbar
@@ -96,7 +127,7 @@ export default function RegexGame() {
 				open={copiedSnackbar}
 				autoHideDuration={1000}
 				onClose={() => setCopiedSnackbar(false)}
-				message="Copied"
+				message="Copied RoomID!"
 				key={"bottom center"}
 			/>
 		</div>
