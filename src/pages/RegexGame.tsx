@@ -3,6 +3,7 @@ import type { Player, Message, StringQuestion } from "../types";
 import { useEffect, useRef, useState } from "react";
 import {
 	Box,
+	Button,
 	IconButton,
 	Snackbar,
 	TextField,
@@ -12,12 +13,30 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 export default function RegexGame() {
 	const location = useLocation();
 	const PlayerData: Player = location.state;
+
 	const wsRef = useRef<WebSocket | null>(null);
 	const [status, setStatus] = useState<"WAITING" | "PLAYER2CONNECTED">(
 		"WAITING"
 	);
 	const [stringQuestion, setStringQuestion] = useState<StringQuestion>();
 	const [copiedSnackbar, setCopiedSnackbar] = useState(false);
+	const [playerGuess, setPlayerGuess] = useState("");
+
+	const guessesStyle = {
+		display: "flex",
+		flexDirection: "column",
+		padding: "130px",
+		border: "solid 1px rgba(139, 139, 139, 1)",
+		borderRadius: "2px",
+		margin: "10px",
+	};
+	const handleGuess = () => {
+		if (playerGuess === "") {
+			return;
+		}
+
+		wsRef.current?.send(playerGuess);
+	};
 
 	useEffect(() => {
 		if (!PlayerData?.PlayerID || !PlayerData?.RoomID) return;
@@ -98,25 +117,28 @@ export default function RegexGame() {
 						{stringQuestion.Question[2]}
 					</Typography>
 					<Box sx={{ display: "flex", flexDirection: "row" }}>
-						<Box
-							sx={{
-								display: "flex",
-								flexDirection: "column",
-								padding: "100px",
-							}}
-						>
+						<Box sx={guessesStyle}>
 							<Typography variant="h5">Your Guesses</Typography>
-							<TextField label="Guess"></TextField>
+							<TextField
+								label="Enter RegEx"
+								onChange={(e) => setPlayerGuess(e.target.value)}
+							></TextField>
+							<Button onClick={() => handleGuess()}>Guess</Button>
+							<Box
+								sx={{
+									display: "flex",
+									flexDirection: "column",
+									textAlign: "center",
+								}}
+							>
+								dfd
+								<br />
+								df
+							</Box>
 						</Box>
-						<Box
-							sx={{
-								display: "flex",
-								flexDirection: "column",
-								padding: "100px",
-							}}
-						>
+						<Box sx={guessesStyle}>
 							<Typography variant="h5">
-								Opponents Guesses
+								Opponent's Guesses
 							</Typography>
 						</Box>
 					</Box>
