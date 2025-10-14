@@ -16,7 +16,7 @@ export interface RoomStatus {
 }
 
 export interface Message {
-	Type: string;
+	Type: "STATUS" | "PLAYERGUESS";
 	Data: RoomStatus;
 }
 

@@ -35,7 +35,7 @@ export default function RegexGame() {
 			return;
 		}
 
-		wsRef.current?.send(playerGuess);
+		wsRef.current?.send(`${PlayerData.PlayerID}:${playerGuess}`);
 	};
 
 	useEffect(() => {
@@ -55,6 +55,11 @@ export default function RegexGame() {
 			switch (msg.Type) {
 				case "STATUS": {
 					setStatus(msg.Data.Status);
+					break;
+				}
+				case "PLAYERGUESS": {
+					console.log(msg);
+					break;
 				}
 			}
 		};
