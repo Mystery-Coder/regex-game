@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import type { Player, Message, StringQuestion } from "../types";
+import type { Player, Message, PlayerGuess } from "../types";
 import { useEffect, useRef, useState } from "react";
 import {
 	Box,
@@ -10,15 +10,26 @@ import {
 	Typography,
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+
+function checkValidRegex(regex: string): boolean {
+	try {
+		new RegExp(regex);
+		return true;
+	} catch (e) {
+		console.log("Not valid regex " + regex);
+		return false;
+	}
+}
+
 export default function RegexGame() {
 	const location = useLocation();
 	const PlayerData: Player = location.state;
 
 	const wsRef = useRef<WebSocket | null>(null);
 	const [status, setStatus] = useState<"WAITING" | "PLAYER2CONNECTED">(
-		"WAITING"
+		"WAITING",
 	);
-	const [stringQuestion, setStringQuestion] = useState<StringQuestion>();
+	const [stringQuestion, setStringQuestion] = useState<string[]>();
 	const [copiedSnackbar, setCopiedSnackbar] = useState(false);
 	const [playerGuess, setPlayerGuess] = useState("");
 
@@ -35,30 +46,41 @@ export default function RegexGame() {
 			return;
 		}
 
-		wsRef.current?.send(`${PlayerData.PlayerID}:${playerGuess}`);
+		if (!checkValidRegex(playerGuess)) {
+			return;
+		}
+		const guessToSend: PlayerGuess = {
+			PlayerID: PlayerData.PlayerID,
+			Guess: playerGuess,
+			Type: "regex",
+		};
+
+		wsRef.current?.send(JSON.stringify(guessToSend));
 	};
 
 	useEffect(() => {
 		if (!PlayerData?.PlayerID || !PlayerData?.RoomID) return;
 
 		const ws = new WebSocket(
-			`ws://localhost:8080/connect_player?PlayerID=${PlayerData.PlayerID}&RoomID=${PlayerData.RoomID}`
+			`ws://localhost:8080/connect_player?PlayerID=${PlayerData.PlayerID}&RoomID=${PlayerData.RoomID}`,
 		);
 
 		ws.onopen = () => {
 			console.log("Connected to WebSocket");
 		};
 
+		//Handle the WS messages
 		ws.onmessage = (event) => {
 			const msg: Message = JSON.parse(event.data);
 			console.log(msg);
 			switch (msg.Type) {
 				case "STATUS": {
 					setStatus(msg.Data.Status);
+
 					break;
 				}
-				case "PLAYERGUESS": {
-					console.log(msg);
+				case "QUESTION": {
+					setStringQuestion(msg.Data.Options);
 					break;
 				}
 			}
@@ -79,19 +101,6 @@ export default function RegexGame() {
 			wsRef.current = null;
 		};
 	}, [PlayerData]);
-
-	useEffect(() => {
-		const getRegexQuestion = async () => {
-			const res = await fetch(
-				"http://localhost:8080/question?type=strings"
-			);
-			const data: StringQuestion = await res.json();
-
-			setStringQuestion(data);
-		};
-
-		getRegexQuestion();
-	}, []);
 
 	return (
 		<div className="center-content-horizontal">
@@ -117,9 +126,8 @@ export default function RegexGame() {
 						Write a RegEx to match all 3 strings,
 					</Typography>
 					<Typography variant="h4">
-						{stringQuestion.Question[0]}{" "}
-						{stringQuestion.Question[1]}{" "}
-						{stringQuestion.Question[2]}
+						{stringQuestion[0]} {stringQuestion[1]}{" "}
+						{stringQuestion[2]}
 					</Typography>
 					<Box sx={{ display: "flex", flexDirection: "row" }}>
 						<Box sx={guessesStyle}>

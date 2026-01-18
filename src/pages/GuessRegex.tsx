@@ -11,9 +11,12 @@ export default function GuessRegex() {
 
 	const createRoomAndJoin = async () => {
 		try {
-			const res = await fetch("http://localhost:8080/create_room");
+			const res = await fetch(
+				"http://localhost:8080/create_room?question_type=strings",
+			);
 			if (!res.ok) {
-				throw new Error("Failed to create room");
+				let err = await res.json();
+				throw new Error("Failed to create room " + err);
 			}
 
 			const createRoomData: CreateRoomRes = await res.json();
@@ -27,7 +30,7 @@ export default function GuessRegex() {
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({ RoomID: createRoomData.RoomID }),
-				}
+				},
 			);
 
 			if (!add_player_res.ok) {
