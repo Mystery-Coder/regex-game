@@ -31,7 +31,13 @@ export default function RegexGame() {
 	);
 	const [stringQuestion, setStringQuestion] = useState<string[]>();
 	const [copiedSnackbar, setCopiedSnackbar] = useState(false);
+	const [invalidRegexSnackbar, setInvalidRegexSnackbar] = useState(false);
 	const [playerGuess, setPlayerGuess] = useState("");
+
+	const [playerGuessList, setPlayerGuessList] = useState<PlayerGuess[]>([]);
+	const [oppositionGuessList, setOppositionGuessList] = useState<
+		PlayerGuess[]
+	>([]);
 
 	const guessesStyle = {
 		display: "flex",
@@ -47,6 +53,7 @@ export default function RegexGame() {
 		}
 
 		if (!checkValidRegex(playerGuess)) {
+			setInvalidRegexSnackbar(true);
 			return;
 		}
 		const guessToSend: PlayerGuess = {
@@ -56,6 +63,7 @@ export default function RegexGame() {
 		};
 
 		wsRef.current?.send(JSON.stringify(guessToSend));
+		setPlayerGuess("");
 	};
 
 	useEffect(() => {
@@ -76,11 +84,24 @@ export default function RegexGame() {
 			switch (msg.Type) {
 				case "STATUS": {
 					setStatus(msg.Data.Status);
-
 					break;
 				}
 				case "QUESTION": {
 					setStringQuestion(msg.Data.Options);
+					break;
+				}
+				case "PLAYERGUESS": {
+					if (msg.Data.Type == "regex") {
+						//Just safety check, has to be regex
+						if (msg.Data.PlayerID === PlayerData.PlayerID) {
+							setPlayerGuessList((prev) => [...prev, msg.Data]);
+						} else {
+							setOppositionGuessList((prev) => [
+								...prev,
+								msg.Data,
+							]);
+						}
+					}
 					break;
 				}
 			}
@@ -134,6 +155,7 @@ export default function RegexGame() {
 							<Typography variant="h5">Your Guesses</Typography>
 							<TextField
 								label="Enter RegEx"
+								value={playerGuess}
 								onChange={(e) => setPlayerGuess(e.target.value)}
 							></TextField>
 							<Button onClick={() => handleGuess()}>Guess</Button>
@@ -144,15 +166,36 @@ export default function RegexGame() {
 									textAlign: "center",
 								}}
 							>
-								dfd
-								<br />
-								df
+								{playerGuessList.length > 0 &&
+									playerGuessList.map((guess, idx) => {
+										return (
+											<Typography key={idx}>
+												{guess.Guess}❌
+											</Typography>
+										);
+									})}
 							</Box>
 						</Box>
 						<Box sx={guessesStyle}>
 							<Typography variant="h5">
 								Opponent's Guesses
 							</Typography>
+							<Box
+								sx={{
+									display: "flex",
+									flexDirection: "column",
+									textAlign: "center",
+								}}
+							>
+								{oppositionGuessList.length > 0 &&
+									oppositionGuessList.map((guess, idx) => {
+										return (
+											<Typography key={idx}>
+												{guess.Guess}❌
+											</Typography>
+										);
+									})}
+							</Box>
 						</Box>
 					</Box>
 				</>
@@ -164,6 +207,14 @@ export default function RegexGame() {
 				onClose={() => setCopiedSnackbar(false)}
 				message="Copied RoomID!"
 				key={"bottom center"}
+			/>
+			<Snackbar
+				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+				open={invalidRegexSnackbar}
+				autoHideDuration={1500}
+				onClose={() => setInvalidRegexSnackbar(false)}
+				message="Invalid regex"
+				key={"invalid regex"}
 			/>
 		</div>
 	);
