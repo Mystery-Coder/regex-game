@@ -38,6 +38,8 @@ export default function RegexGame() {
 	const [oppositionGuessList, setOppositionGuessList] = useState<
 		PlayerGuess[]
 	>([]);
+	const [winner, setWinner] = useState(false);
+	const [loser, setLoser] = useState(false);
 
 	const guessesStyle = {
 		display: "flex",
@@ -91,7 +93,7 @@ export default function RegexGame() {
 					break;
 				}
 				case "PLAYERGUESS": {
-					if (msg.Data.Type == "regex") {
+					if (msg.Data.Type === "regex") {
 						//Just safety check, has to be regex
 						if (msg.Data.PlayerID === PlayerData.PlayerID) {
 							setPlayerGuessList((prev) => [...prev, msg.Data]);
@@ -103,6 +105,15 @@ export default function RegexGame() {
 						}
 					}
 					break;
+				}
+				case "WINNIGGUESS": {
+					if (msg.Data.Type === "regex") {
+						if (msg.Data.PlayerID === PlayerData.PlayerID) {
+							setWinner(true);
+						} else {
+							setLoser(true);
+						}
+					}
 				}
 			}
 		};
@@ -200,6 +211,9 @@ export default function RegexGame() {
 					</Box>
 				</>
 			)}
+
+			{winner && <Typography>You Win!</Typography>}
+			{loser && <Typography>You lost.</Typography>}
 			<Snackbar
 				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
 				open={copiedSnackbar}

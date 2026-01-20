@@ -39,7 +39,7 @@ export interface QuestionMessage {
 }
 
 export interface GuessMessage {
-	Type: "PLAYERGUESS";
+	Type: "PLAYERGUESS" | "WINNIGGUESS";
 	Data: PlayerGuess;
 }
 
