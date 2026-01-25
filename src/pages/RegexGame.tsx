@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import {
 	Box,
 	Button,
+	Dialog,
+	DialogContent,
+	DialogTitle,
 	IconButton,
 	Snackbar,
 	TextField,
@@ -39,7 +42,7 @@ export default function RegexGame() {
 		PlayerGuess[]
 	>([]);
 	const [winner, setWinner] = useState(false);
-	const [loser, setLoser] = useState(false);
+	const [gameOverDialogOpen, setGameOverDialogOpen] = useState(false);
 
 	const guessesStyle = {
 		display: "flex",
@@ -68,6 +71,40 @@ export default function RegexGame() {
 		setPlayerGuess("");
 	};
 
+	const handleWSEvents = (msg: Message) => {
+		switch (msg.Type) {
+			case "STATUS": {
+				setStatus(msg.Data.Status);
+				break;
+			}
+			case "QUESTION": {
+				setStringQuestion(msg.Data.Options);
+				break;
+			}
+			case "PLAYERGUESS": {
+				if (msg.Data.Type === "regex") {
+					//Just safety check, has to be regex
+					if (msg.Data.PlayerID === PlayerData.PlayerID) {
+						setPlayerGuessList((prev) => [...prev, msg.Data]);
+					} else {
+						setOppositionGuessList((prev) => [...prev, msg.Data]);
+					}
+				}
+				break;
+			}
+			case "WINNIGGUESS": {
+				if (msg.Data.Type === "regex") {
+					if (msg.Data.PlayerID === PlayerData.PlayerID) {
+						setWinner(true);
+						setGameOverDialogOpen(true);
+					} else {
+						setGameOverDialogOpen(true);
+					}
+				}
+			}
+		}
+	};
+
 	useEffect(() => {
 		if (!PlayerData?.PlayerID || !PlayerData?.RoomID) return;
 
@@ -81,40 +118,13 @@ export default function RegexGame() {
 
 		//Handle the WS messages
 		ws.onmessage = (event) => {
-			const msg: Message = JSON.parse(event.data);
-			console.log(msg);
-			switch (msg.Type) {
-				case "STATUS": {
-					setStatus(msg.Data.Status);
-					break;
-				}
-				case "QUESTION": {
-					setStringQuestion(msg.Data.Options);
-					break;
-				}
-				case "PLAYERGUESS": {
-					if (msg.Data.Type === "regex") {
-						//Just safety check, has to be regex
-						if (msg.Data.PlayerID === PlayerData.PlayerID) {
-							setPlayerGuessList((prev) => [...prev, msg.Data]);
-						} else {
-							setOppositionGuessList((prev) => [
-								...prev,
-								msg.Data,
-							]);
-						}
-					}
-					break;
-				}
-				case "WINNIGGUESS": {
-					if (msg.Data.Type === "regex") {
-						if (msg.Data.PlayerID === PlayerData.PlayerID) {
-							setWinner(true);
-						} else {
-							setLoser(true);
-						}
-					}
-				}
+			let msg: Message;
+			try {
+				msg = JSON.parse(event.data);
+				console.log(msg);
+				handleWSEvents(msg);
+			} catch (e) {
+				console.log(e);
 			}
 		};
 
@@ -181,7 +191,7 @@ export default function RegexGame() {
 									playerGuessList.map((guess, idx) => {
 										return (
 											<Typography key={idx}>
-												{guess.Guess}❌
+												{guess.Guess}
 											</Typography>
 										);
 									})}
@@ -212,8 +222,19 @@ export default function RegexGame() {
 				</>
 			)}
 
-			{winner && <Typography>You Win!</Typography>}
-			{loser && <Typography>You lost.</Typography>}
+			<Dialog open={gameOverDialogOpen} disableEscapeKeyDown>
+				<DialogTitle>
+					{winner ? "🎉 You Win!" : "😔 You Lost"}
+				</DialogTitle>
+				<DialogContent>
+					<Typography variant="body1">
+						{winner
+							? `Congratulations! You solved it in ${playerGuessList.length} ${playerGuessList.length === 1 ? "guess" : "guesses"}!`
+							: `Your opponent solved it first. You made ${playerGuessList.length} ${playerGuessList.length === 1 ? "guess" : "guesses"}.`}
+					</Typography>
+				</DialogContent>
+			</Dialog>
+
 			<Snackbar
 				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
 				open={copiedSnackbar}
