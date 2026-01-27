@@ -43,11 +43,14 @@ export default function RegexGame() {
 	>([]);
 	const [winner, setWinner] = useState(false);
 	const [gameOverDialogOpen, setGameOverDialogOpen] = useState(false);
+	const [winningGuess, setWinningGuess] = useState("");
 
 	const guessesStyle = {
 		display: "flex",
 		flexDirection: "column",
-		padding: "130px",
+		padding: "20px",
+		minHeight: "380px",
+		minWidth: "400px",
 		border: "solid 1px rgba(139, 139, 139, 1)",
 		borderRadius: "2px",
 		margin: "10px",
@@ -96,10 +99,9 @@ export default function RegexGame() {
 				if (msg.Data.Type === "regex") {
 					if (msg.Data.PlayerID === PlayerData.PlayerID) {
 						setWinner(true);
-						setGameOverDialogOpen(true);
-					} else {
-						setGameOverDialogOpen(true);
 					}
+					setGameOverDialogOpen(true);
+					setWinningGuess(msg.Data.Guess);
 				}
 			}
 		}
@@ -178,6 +180,11 @@ export default function RegexGame() {
 								label="Enter RegEx"
 								value={playerGuess}
 								onChange={(e) => setPlayerGuess(e.target.value)}
+								onKeyDown={(e) => {
+									if (e.code === "Enter") {
+										handleGuess();
+									}
+								}}
 							></TextField>
 							<Button onClick={() => handleGuess()}>Guess</Button>
 							<Box
@@ -212,7 +219,7 @@ export default function RegexGame() {
 									oppositionGuessList.map((guess, idx) => {
 										return (
 											<Typography key={idx}>
-												{guess.Guess}❌
+												{guess.Guess}
 											</Typography>
 										);
 									})}
@@ -231,6 +238,8 @@ export default function RegexGame() {
 						{winner
 							? `Congratulations! You solved it in ${playerGuessList.length} ${playerGuessList.length === 1 ? "guess" : "guesses"}!`
 							: `Your opponent solved it first. You made ${playerGuessList.length} ${playerGuessList.length === 1 ? "guess" : "guesses"}.`}
+						<br />
+						{`Winning guess was ${winningGuess}`}
 					</Typography>
 				</DialogContent>
 			</Dialog>
