@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { AddPlayerRes, CreateRoomRes, Player } from "../types";
 
-export default function GuessRegex() {
+export default function SetupRegexGame() {
 	const [joinRoom, setJoinRoom] = useState(false);
 	const [roomID, setRoomID] = useState("");
 

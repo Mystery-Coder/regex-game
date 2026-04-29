@@ -24,7 +24,7 @@ export interface Question {
 export interface PlayerGuess {
 	PlayerID: string;
 	Guess: string;
-	Type: string;
+	Type: "string" | "regex";
 }
 
 //Message Interfaces

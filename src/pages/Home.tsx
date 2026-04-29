@@ -34,7 +34,7 @@ export default function Home() {
 				<Button
 					color="success"
 					variant="outlined"
-					onClick={() => navigate("/guess_regex")}
+					onClick={() => navigate("/setup_regex_game")}
 					sx={{ textTransform: "none", scale: 1.4 }}
 				>
 					Regex Challenge
@@ -42,7 +42,7 @@ export default function Home() {
 				<Button
 					color="secondary"
 					variant="contained"
-					onClick={() => navigate("/guess_string")}
+					onClick={() => navigate("/setup_string_game")}
 					sx={{ textTransform: "none", scale: 1.4 }}
 				>
 					String Challenge
