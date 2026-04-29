@@ -3,7 +3,6 @@ import type { Player, Message, PlayerGuess } from "../types";
 import { useEffect, useRef, useState } from "react";
 import {
 	Box,
-	Button,
 	Dialog,
 	DialogContent,
 	DialogTitle,
@@ -177,7 +176,7 @@ export default function RegexGame() {
 						<Box sx={guessesStyle}>
 							<Typography variant="h5">Your Guesses</Typography>
 							<TextField
-								label="Enter RegEx"
+								// label="Enter RegEx"
 								value={playerGuess}
 								onChange={(e) => setPlayerGuess(e.target.value)}
 								onKeyDown={(e) => {
@@ -185,8 +184,10 @@ export default function RegexGame() {
 										handleGuess();
 									}
 								}}
+								placeholder="Enter your guess"
+								autoFocus
 							></TextField>
-							<Button onClick={() => handleGuess()}>Guess</Button>
+
 							<Box
 								sx={{
 									display: "flex",

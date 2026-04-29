@@ -42,7 +42,7 @@ export default function Home() {
 				<Button
 					color="secondary"
 					variant="contained"
-					onClick={() => navigate("/guess_pattern")}
+					onClick={() => navigate("/guess_string")}
 					sx={{ textTransform: "none", scale: 1.4 }}
 				>
 					String Challenge
