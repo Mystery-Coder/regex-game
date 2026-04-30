@@ -133,7 +133,7 @@ export default function StringGame() {
 
 	return (
 		<div className="center-content-horizontal">
-			<Typography variant="h1">RegexGame</Typography>
+			<Typography variant="h1">StringGame</Typography>
 			{status == "WAITING" && (
 				<Typography>
 					{PlayerData.RoomID}{" "}
@@ -152,7 +152,8 @@ export default function StringGame() {
 			{status == "PLAYER2CONNECTED" && regexQuestion && (
 				<>
 					<Typography variant="h5">
-						Write a RegEx to match all 3 strings,
+						Give a string to match the Regular Expression (Press
+						enter to guess)
 					</Typography>
 					<Typography variant="h4">{regexQuestion}</Typography>
 					<Box sx={{ display: "flex", flexDirection: "row" }}>

@@ -166,7 +166,8 @@ export default function RegexGame() {
 			{status == "PLAYER2CONNECTED" && stringQuestion && (
 				<>
 					<Typography variant="h5">
-						Write a RegEx to match all 3 strings,
+						Write a RegEx to match all 3 strings (Press enter to
+						guess)
 					</Typography>
 					<Typography variant="h4">
 						{stringQuestion[0]} {stringQuestion[1]}{" "}
