@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { AddPlayerRes, CreateRoomRes, Player } from "../types";
 
+const BACKEND = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8080";
+
 export default function SetupRegexGame() {
 	const [joinRoom, setJoinRoom] = useState(false);
 	const [roomID, setRoomID] = useState("");
@@ -12,7 +14,7 @@ export default function SetupRegexGame() {
 	const createRoomAndJoin = async () => {
 		try {
 			const res = await fetch(
-				"http://localhost:8080/create_room?question_type=strings",
+				`${BACKEND}/create_room?question_type=strings`,
 			);
 			if (!res.ok) {
 				let err = await res.json();
@@ -22,16 +24,13 @@ export default function SetupRegexGame() {
 			const createRoomData: CreateRoomRes = await res.json();
 			console.log(createRoomData.RoomID);
 
-			const add_player_res = await fetch(
-				"http://localhost:8080/add_player",
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ RoomID: createRoomData.RoomID }),
+			const add_player_res = await fetch(`${BACKEND}/add_player`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
 				},
-			);
+				body: JSON.stringify({ RoomID: createRoomData.RoomID }),
+			});
 
 			if (!add_player_res.ok) {
 				const errorData = await add_player_res.json();
@@ -57,7 +56,7 @@ export default function SetupRegexGame() {
 			return;
 		}
 
-		const add_player_res = await fetch("http://localhost:8080/add_player", {
+		const add_player_res = await fetch(`${BACKEND}/add_player`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

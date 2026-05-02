@@ -13,6 +13,11 @@ import {
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
+const BACKEND = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8080";
+const BACKEND_WS = BACKEND.replace(/^https?:\/\//, (m: string) =>
+	m === "https://" ? "wss://" : "ws://",
+);
+
 export default function StringGame() {
 	const location = useLocation();
 	const PlayerData: Player = location.state;
@@ -96,7 +101,7 @@ export default function StringGame() {
 		if (!PlayerData?.PlayerID || !PlayerData?.RoomID) return;
 
 		const ws = new WebSocket(
-			`ws://localhost:8080/connect_player?PlayerID=${PlayerData.PlayerID}&RoomID=${PlayerData.RoomID}`,
+			`${BACKEND_WS}/connect_player?PlayerID=${PlayerData.PlayerID}&RoomID=${PlayerData.RoomID}`,
 		);
 
 		ws.onopen = () => {
