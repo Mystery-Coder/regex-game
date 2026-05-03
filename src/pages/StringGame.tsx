@@ -1,17 +1,23 @@
 import { useLocation } from "react-router-dom";
 import type { Player, Message, PlayerGuess } from "../types";
-import { useEffect, useRef, useState } from "react";
+import {
+	useEffect,
+	useRef,
+	useState,
+	type ChangeEvent,
+	type CSSProperties,
+	type KeyboardEvent,
+} from "react";
 import {
 	Box,
 	Dialog,
-	DialogContent,
-	DialogTitle,
+	Flex,
+	Heading,
 	IconButton,
-	Snackbar,
+	Text,
 	TextField,
-	Typography,
-} from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+} from "@radix-ui/themes";
+import { CopyIcon } from "@radix-ui/react-icons";
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8080";
 const BACKEND_WS = BACKEND.replace(/^https?:\/\//, (m: string) =>
@@ -39,16 +45,37 @@ export default function StringGame() {
 	const [gameOverDialogOpen, setGameOverDialogOpen] = useState(false);
 	const [winningGuess, setWinningGuess] = useState("");
 
-	const guessesStyle = {
+	const guessesStyle: CSSProperties = {
 		display: "flex",
 		flexDirection: "column",
 		padding: "20px",
 		minHeight: "380px",
 		minWidth: "400px",
-		border: "solid 1px rgba(139, 139, 139, 1)",
-		borderRadius: "2px",
+		border: "1px solid var(--gray-a5)",
+		borderRadius: "12px",
+		background: "var(--color-panel-solid, white)",
+		boxShadow: "0 10px 30px rgba(0, 0, 0, 0.06)",
 		margin: "10px",
 	};
+	const toastStyle: CSSProperties = {
+		position: "fixed",
+		left: "50%",
+		transform: "translateX(-50%)",
+		padding: "10px 14px",
+		borderRadius: "999px",
+		boxShadow: "0 12px 30px rgba(0, 0, 0, 0.25)",
+		background: "var(--gray-12)",
+		color: "white",
+		zIndex: 1000,
+	};
+
+	useEffect(() => {
+		if (!copiedSnackbar) return;
+		const timer = window.setTimeout(() => {
+			setCopiedSnackbar(false);
+		}, 1000);
+		return () => window.clearTimeout(timer);
+	}, [copiedSnackbar]);
 	const handleGuess = () => {
 		if (playerGuess === "") {
 			return;
@@ -137,111 +164,143 @@ export default function StringGame() {
 	}, [PlayerData]);
 
 	return (
-		<div className="center-content-horizontal">
-			<Typography variant="h1">StringGame</Typography>
+		<Box
+			className="center-content-horizontal"
+			style={{ padding: "24px 16px" }}
+		>
+			<Heading size="8">StringGame</Heading>
 			{status == "WAITING" && (
-				<Typography>
-					{PlayerData.RoomID}{" "}
+				<Flex align="center" style={{ gap: "8px" }}>
+					<Text size="4" weight="medium">
+						{PlayerData.RoomID}
+					</Text>
 					<IconButton
+						variant="ghost"
+						color="gray"
+						aria-label="Copy room ID"
 						onClick={() => {
 							navigator.clipboard.writeText(PlayerData.RoomID);
 							setCopiedSnackbar(true);
 						}}
 					>
-						<ContentCopyIcon></ContentCopyIcon>
-					</IconButton>{" "}
-					(share this room ID)
-				</Typography>
+						<CopyIcon />
+					</IconButton>
+					<Text size="2" color="gray">
+						(share this room ID)
+					</Text>
+				</Flex>
 			)}
 
 			{status == "PLAYER2CONNECTED" && regexQuestion && (
 				<>
-					<Typography variant="h5">
+					<Text size="4" align="center">
 						Give a string to match the Regular Expression (Press
 						enter to guess)
-					</Typography>
-					<Typography variant="h4">{regexQuestion}</Typography>
-					<Box sx={{ display: "flex", flexDirection: "row" }}>
-						<Box sx={guessesStyle}>
-							<Typography variant="h5">Your Guesses</Typography>
-							<TextField
-								// label="Enter RegEx"
-								value={playerGuess}
-								onChange={(e) => setPlayerGuess(e.target.value)}
-								onKeyDown={(e) => {
-									if (e.code === "Enter") {
-										handleGuess();
-									}
-								}}
-								placeholder="Enter your guess"
-								autoFocus
-							></TextField>
+					</Text>
+					<Heading size="5" align="center">
+						{regexQuestion}
+					</Heading>
+					<Flex
+						style={{
+							gap: "16px",
+							flexWrap: "wrap",
+							justifyContent: "center",
+						}}
+					>
+						<Box style={guessesStyle}>
+							<Text size="4" weight="medium">
+								Your Guesses
+							</Text>
+							<TextField.Root size="3" style={{ width: "100%" }}>
+								<TextField.Root
+									value={playerGuess}
+									onChange={(
+										event: ChangeEvent<HTMLInputElement>,
+									) => setPlayerGuess(event.target.value)}
+									onKeyDown={(
+										event: KeyboardEvent<HTMLInputElement>,
+									) => {
+										if (event.code === "Enter") {
+											handleGuess();
+										}
+									}}
+									placeholder="Enter your guess"
+									autoFocus
+								/>
+							</TextField.Root>
 
 							<Box
-								sx={{
+								style={{
 									display: "flex",
 									flexDirection: "column",
 									textAlign: "center",
+									gap: "6px",
 								}}
 							>
 								{playerGuessList.length > 0 &&
 									playerGuessList.map((guess, idx) => {
 										return (
-											<Typography key={idx}>
-												{guess.Guess}
-											</Typography>
+											<Text key={idx}>{guess.Guess}</Text>
 										);
 									})}
 							</Box>
 						</Box>
-						<Box sx={guessesStyle}>
-							<Typography variant="h5">
+						<Box style={guessesStyle}>
+							<Text size="4" weight="medium">
 								Opponent's Guesses
-							</Typography>
+							</Text>
 							<Box
-								sx={{
+								style={{
 									display: "flex",
 									flexDirection: "column",
 									textAlign: "center",
+									gap: "6px",
 								}}
 							>
 								{oppositionGuessList.length > 0 &&
 									oppositionGuessList.map((guess, idx) => {
 										return (
-											<Typography key={idx}>
-												{guess.Guess}
-											</Typography>
+											<Text key={idx}>{guess.Guess}</Text>
 										);
 									})}
 							</Box>
 						</Box>
-					</Box>
+					</Flex>
 				</>
 			)}
 
-			<Dialog open={gameOverDialogOpen} disableEscapeKeyDown>
-				<DialogTitle>
-					{winner ? "🎉 You Win!" : "😔 You Lost"}
-				</DialogTitle>
-				<DialogContent>
-					<Typography variant="body1">
-						{winner
-							? `Congratulations! You solved it in ${playerGuessList.length} ${playerGuessList.length === 1 ? "guess" : "guesses"}!`
-							: `Your opponent solved it first. You made ${playerGuessList.length} ${playerGuessList.length === 1 ? "guess" : "guesses"}.`}
-						<br />
-						{`Winning guess was ${winningGuess}`}
-					</Typography>
-				</DialogContent>
-			</Dialog>
+			<Dialog.Root
+				open={gameOverDialogOpen}
+				onOpenChange={setGameOverDialogOpen}
+			>
+				<Dialog.Content
+					onEscapeKeyDown={(event: Event) => event.preventDefault()}
+					onPointerDownOutside={(event: Event) =>
+						event.preventDefault()
+					}
+				>
+					<Dialog.Title>
+						{winner ? "🎉 You Win!" : "😔 You Lost"}
+					</Dialog.Title>
+					<Box style={{ marginTop: "8px" }}>
+						<Text size="3">
+							{winner
+								? `Congratulations! You solved it in ${playerGuessList.length} ${playerGuessList.length === 1 ? "guess" : "guesses"}!`
+								: `Your opponent solved it first. You made ${playerGuessList.length} ${playerGuessList.length === 1 ? "guess" : "guesses"}.`}
+							<br />
+							{`Winning guess was ${winningGuess}`}
+						</Text>
+					</Box>
+				</Dialog.Content>
+			</Dialog.Root>
 
-			<Snackbar
-				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-				open={copiedSnackbar}
-				autoHideDuration={1000}
-				onClose={() => setCopiedSnackbar(false)}
-				message="Copied RoomID!"
-				key={"bottom center"}
-			/>
-		</div>
+			{copiedSnackbar && (
+				<Box style={{ ...toastStyle, bottom: "24px" }}>
+					<Text size="2" style={{ color: "white" }}>
+						Copied RoomID!
+					</Text>
+				</Box>
+			)}
+		</Box>
 	);
 }

@@ -16,5 +16,7 @@
 }
 
 body {
-	background-color: rgb(224, 219, 219);
+	margin: 0;
+	background-color: var(--gray-2);
+	color: var(--gray-12);
 }

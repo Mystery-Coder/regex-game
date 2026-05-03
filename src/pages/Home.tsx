@@ -1,49 +1,49 @@
-import { Box, Button, Toolbar, Typography } from "@mui/material";
-import AppBar from "@mui/material/AppBar";
+import { Box, Button, Flex, Heading } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
 	const navigate = useNavigate();
 	return (
-		<Box sx={{ flexGrow: 1 }}>
-			<AppBar position="static">
-				<Toolbar>
-					<img
-						src="/regex.png"
-						width={25}
-						height={25}
-						style={{ marginRight: 20 }}
-					/>
-					<Typography
-						variant="h6"
-						component="div"
-						sx={{ flexGrow: 1 }}
-					>
-						RegEx Battle
-					</Typography>
-					<Button
-						color="inherit"
-						onClick={() => navigate("/about")}
-						sx={{ textTransform: "none" }}
-					>
+		<Box style={{ flexGrow: 1 }}>
+			<Box
+				style={{
+					background: "var(--color-panel-solid, white)",
+					borderBottom: "1px solid var(--gray-a4)",
+				}}
+			>
+				<Flex
+					align="center"
+					justify="between"
+					style={{ padding: "12px 20px", gap: "12px" }}
+				>
+					<Flex align="center" style={{ gap: "12px" }}>
+						<img
+							src="/regex.png"
+							width={25}
+							height={25}
+							style={{ display: "block" }}
+						/>
+						<Heading size="4">RegEx Battle</Heading>
+					</Flex>
+					<Button variant="ghost" onClick={() => navigate("/about")}>
 						About
 					</Button>
-				</Toolbar>
-			</AppBar>
+				</Flex>
+			</Box>
 			<Box className="center-content">
 				<Button
-					color="success"
-					variant="outlined"
+					color="green"
+					variant="outline"
 					onClick={() => navigate("/setup_regex_game")}
-					sx={{ textTransform: "none", scale: 1.4 }}
+					size="3"
 				>
 					Regex Challenge
 				</Button>
 				<Button
-					color="secondary"
-					variant="contained"
+					color="indigo"
+					variant="solid"
 					onClick={() => navigate("/setup_string_game")}
-					sx={{ textTransform: "none", scale: 1.4 }}
+					size="3"
 				>
 					String Challenge
 				</Button>

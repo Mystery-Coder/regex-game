@@ -1,5 +1,5 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { Box, Button, Flex, Heading, Text, TextField } from "@radix-ui/themes";
+import { useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import type { AddPlayerRes, CreateRoomRes, Player } from "../types";
 
@@ -81,31 +81,34 @@ export default function SetupRegexGame() {
 
 	return (
 		<Box className="center-content-horizontal">
-			<Typography variant="h2">Guess the Regex</Typography>
-			<Typography variant="h5">
+			<Heading size="7">Guess the Regex</Heading>
+			<Text size="4" align="center">
 				Write a Regular Expression to match 3 strings shown
-			</Typography>
-			<Box
-				sx={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "1.4rem",
-					margin: "170px",
-				}}
-			>
+			</Text>
+			<Flex direction="column" style={{ gap: "1.4rem", margin: "170px" }}>
 				{joinRoom && (
-					<TextField
-						label="Room ID"
-						onChange={(e) => setRoomID(e.target.value)}
-					></TextField>
+					<TextField.Root
+						size="3"
+						style={{ minWidth: "260px" }}
+						placeholder="Room ID"
+						onChange={(event: ChangeEvent<HTMLInputElement>) =>
+							setRoomID(event.target.value)
+						}
+					/>
 				)}
 				{!joinRoom && (
-					<Button onClick={() => createRoomAndJoin()}>
+					<Button size="3" onClick={() => createRoomAndJoin()}>
 						Create 1v1 Room
 					</Button>
 				)}
-				<Button onClick={() => handleJoinRoom()}>Join 1v1 Room</Button>
-			</Box>
+				<Button
+					size="3"
+					variant="soft"
+					onClick={() => handleJoinRoom()}
+				>
+					Join 1v1 Room
+				</Button>
+			</Flex>
 		</Box>
 	);
 }

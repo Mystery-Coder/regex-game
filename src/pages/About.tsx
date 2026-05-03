@@ -1,23 +1,20 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Heading, Link, Text } from "@radix-ui/themes";
 
 export default function About() {
 	return (
 		<Box className="center-content">
-			<Typography variant="h2">Regex Battle</Typography>
-			<Typography variant="h5">
+			<Heading size="7">Regex Battle</Heading>
+			<Text size="4" align="center">
 				Hone your Regular Expression skills by battling 1v1, Practice
 				RegEx at{" "}
-				<a
+				<Link
 					href="https://regexr.com/"
 					target="_blank"
-					style={{
-						textDecoration: "none",
-						color: "rgba(114, 152, 255, 1)",
-					}}
+					rel="noreferrer"
 				>
 					RegExr
-				</a>
-			</Typography>
+				</Link>
+			</Text>
 		</Box>
 	);
 }
