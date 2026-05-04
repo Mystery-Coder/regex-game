@@ -234,23 +234,24 @@ export default function RegexGame() {
 							<Text size="4" weight="medium">
 								Your Guesses
 							</Text>
-							<TextField.Root size="3" style={{ width: "100%" }}>
-								<TextField.Root
-									value={playerGuess}
-									onChange={(
-										event: ChangeEvent<HTMLInputElement>,
-									) => setPlayerGuess(event.target.value)}
-									onKeyDown={(
-										event: KeyboardEvent<HTMLInputElement>,
-									) => {
-										if (event.code === "Enter") {
-											handleGuess();
-										}
-									}}
-									placeholder="Enter your guess"
-									autoFocus
-								/>
-							</TextField.Root>
+
+							<TextField.Root
+								size="3"
+								style={{ width: "100%" }}
+								value={playerGuess}
+								onChange={(
+									event: ChangeEvent<HTMLInputElement>,
+								) => setPlayerGuess(event.target.value)}
+								onKeyDown={(
+									event: KeyboardEvent<HTMLInputElement>,
+								) => {
+									if (event.code === "Enter") {
+										handleGuess();
+									}
+								}}
+								placeholder="Enter your guess"
+								autoFocus
+							/>
 
 							<Box
 								style={{
